@@ -40,6 +40,9 @@ def init_minio():
             
     except S3Error as e:
         print(f"Error initializing MinIO: {e}")
+    except Exception as e:
+        print(f"MinIO connection error: {e}")
+        print("MinIO will be initialized when first used")
 
 async def upload_image(file: UploadFile) -> str:
     """Upload image to MinIO and return the URL"""
@@ -55,7 +58,10 @@ async def upload_image(file: UploadFile) -> str:
             )
         
         # Generate unique filename
-        file_extension = file.filename.split(".")[-1] if "." in file.filename else "jpg"
+        if file.filename and "." in file.filename:
+            file_extension = file.filename.split(".")[-1]
+        else:
+            file_extension = "jpg"
         unique_filename = f"{uuid.uuid4()}.{file_extension}"
         
         # Read file content
@@ -107,7 +113,8 @@ def get_image_url(filename: str) -> str:
         client = get_minio_client()
         
         # Generate presigned URL (valid for 24 hours)
-        url = client.presigned_get_object(BUCKET_NAME, filename, expires=86400)
+        from datetime import timedelta
+        url = client.presigned_get_object(BUCKET_NAME, filename, expires=timedelta(seconds=86400))
         return url
         
     except S3Error as e:

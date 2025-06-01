@@ -28,8 +28,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Initialize MinIO
-init_minio()
+# Initialize MinIO (optional - will retry when needed)
+try:
+    init_minio()
+except Exception as e:
+    print(f"MinIO not available at startup: {e}")
 
 # Include routers
 app.include_router(mahasiswa.router, prefix="/api/v1/mahasiswa", tags=["Mahasiswa"])
@@ -54,6 +57,6 @@ if __name__ == "__main__":
     uvicorn.run(
         "main:app",
         host="0.0.0.0",
-        port=8000,
+        port=5000,
         reload=True
     )

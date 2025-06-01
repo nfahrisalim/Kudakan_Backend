@@ -22,8 +22,8 @@ author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "pip install fastapi uvicorn sqlalchemy psycopg2-binary pydantic[email] minio python-multipart && python main.py"
-waitForPort = 8000
+args = "python main.py"
+waitForPort = 5000
 
 [deployment]
-run = ["sh", "-c", "pip install fastapi uvicorn sqlalchemy psycopg2-binary pydantic[email] minio python-multipart && python main.py"]
+run = ["sh", "-c", "python main.py"]

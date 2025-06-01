@@ -1,5 +1,5 @@
-from sqlalchemy import Column, Integer, String, DateTime, Enum, Decimal, ForeignKey, Text
-from sqlalchemy.relationship import relationship
+from sqlalchemy import Column, Integer, String, DateTime, Enum, ForeignKey, Text, Numeric
+from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from database import Base
 import enum
@@ -38,7 +38,7 @@ class Menu(Base):
     id_menu = Column(Integer, primary_key=True, index=True)
     id_kantin = Column(Integer, ForeignKey("kantin.id_kantin"), nullable=False)
     nama_menu = Column(String(255), nullable=False)
-    harga = Column(Decimal(10, 2), nullable=False)
+    harga = Column(Numeric(10, 2), nullable=False)
     img_menu = Column(String(500), nullable=True)  # URL or path to image
     
     # Relationships
@@ -66,7 +66,7 @@ class DetailPesanan(Base):
     id_pesanan = Column(Integer, ForeignKey("pesanan.id_pesanan"), nullable=False)
     id_menu = Column(Integer, ForeignKey("menu.id_menu"), nullable=False)
     jumlah = Column(Integer, nullable=False)
-    harga_total = Column(Decimal(10, 2), nullable=False)
+    harga_total = Column(Numeric(10, 2), nullable=False)
     
     # Relationships
     pesanan = relationship("Pesanan", back_populates="detail_pesanan")
