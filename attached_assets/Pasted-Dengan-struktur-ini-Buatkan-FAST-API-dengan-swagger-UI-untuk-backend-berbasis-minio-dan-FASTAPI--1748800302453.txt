@@ -1,0 +1,62 @@
+Dengan struktur ini Buatkan FAST API dengan swagger UI untuk backend berbasis minio dan FASTAPI
+
+---
+
+### **Tabel: Mahasiswa**
+
+| Kolom         | Tipe Data        | Keterangan  |
+| ------------- | ---------------- | ----------- |
+| id\_mahasiswa | INT (PK)         | Primary Key |
+| nama          | VARCHAR          |             |
+| email         | VARCHAR (UNIQUE) | Email unik  |
+| password      | VARCHAR          |             |
+| nim           | VARCHAR          |             |
+
+---
+
+### **Tabel: Kantin**
+
+| Kolom        | Tipe Data        | Keterangan  |
+| ------------ | ---------------- | ----------- |
+| id\_kantin   | INT (PK)         | Primary Key |
+| nama\_kantin | VARCHAR          |             |
+| email        | VARCHAR (UNIQUE) | Email unik  |
+| password     | VARCHAR          |             |
+
+---
+
+### **Tabel: Menu**
+
+| Kolom      | Tipe Data | Keterangan                           |
+| ---------- | --------- | ------------------------------------ |
+| id\_menu   | INT (PK)  | Primary Key                          |
+| id\_kantin | INT (FK)  | Foreign Key → Kantin                 |
+| nama\_menu | VARCHAR   |                                      |
+| harga      | VARCHAR   | (Sebaiknya gunakan DECIMAL atau INT) |
+| img\_menu  | VARCHAR   | URL atau path gambar                 |
+
+---
+
+### **Tabel: Pesanan**
+
+| Kolom         | Tipe Data | Keterangan                                     |
+| ------------- | --------- | ---------------------------------------------- |
+| id\_pesanan   | INT (PK)  | Primary Key                                    |
+| id\_kantin    | INT (FK)  | Foreign Key → Kantin                           |
+| id\_mahasiswa | INT (FK)  | Foreign Key → Mahasiswa                        |
+| tanggal       | DATETIME  | Tanggal dan waktu pemesanan                    |
+| status        | ENUM      | Status pesanan (misalnya: 'proses', 'selesai') |
+
+---
+
+### **Tabel: Detail\_Pesanan**
+
+| Kolom        | Tipe Data | Keterangan                       |
+| ------------ | --------- | -------------------------------- |
+| id\_detail   | INT (PK)  | Primary Key                      |
+| id\_pesanan  | INT (FK)  | Foreign Key → Pesanan            |
+| id\_menu     | INT (FK)  | Foreign Key → Menu               |
+| jumlah       | INT       | Jumlah item                      |
+| harga\_total | DECIMAL   | Total harga untuk item \* jumlah |
+
+---
