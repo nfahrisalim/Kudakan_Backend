@@ -1,0 +1,58 @@
+### **Tabel Mahasiswa**
+
+Tabel ini menyimpan data pengguna yang berperan sebagai mahasiswa. Kolom-kolom yang terdapat dalam tabel ini adalah:
+
+* `id_mahasiswa`: Tipe data **INT**, merupakan Primary Key.
+* `nama`: Tipe data **VARCHAR**, menyimpan nama mahasiswa.
+* `email`: Tipe data **VARCHAR**, bersifat **UNIQUE**, digunakan untuk login dan identifikasi unik.
+* `password`: Tipe data **VARCHAR**, menyimpan kata sandi mahasiswa.
+* `nim`: Tipe data **VARCHAR**, menyimpan Nomor Induk Mahasiswa.
+
+---
+
+### **Tabel Kantin**
+
+Tabel ini menyimpan data pengguna yang berperan sebagai pengelola kantin. Kolom-kolom yang terdapat dalam tabel ini adalah:
+
+* `id_kantin`: Tipe data **INT**, merupakan Primary Key.
+* `nama_kantin`: Tipe data **VARCHAR**, menyimpan nama kantin.
+* `email`: Tipe data **VARCHAR**, bersifat **UNIQUE**, digunakan untuk login dan identifikasi unik.
+* `password`: Tipe data **VARCHAR**, menyimpan kata sandi pemilik kantin.
+
+---
+
+### **Tabel Menu**
+
+Tabel ini menyimpan daftar menu makanan/minuman yang tersedia pada setiap kantin. Kolom-kolom dalam tabel ini adalah:
+
+* `id_menu`: Tipe data **INT**, merupakan Primary Key.
+* `id_kantin`: Tipe data **INT**, merupakan Foreign Key yang merujuk ke tabel **Kantin**.
+* `nama_menu`: Tipe data **VARCHAR**, menyimpan nama menu.
+* `harga`: Tipe data **VARCHAR**, namun sebaiknya diganti menjadi **DECIMAL** atau **INT** agar sesuai untuk operasi perhitungan harga.
+* `img_menu`: Tipe data **VARCHAR**, menyimpan URL atau path gambar menu.
+
+---
+
+### **Tabel Pesanan**
+
+Tabel ini menyimpan data pemesanan makanan oleh mahasiswa dari kantin tertentu. Kolom-kolomnya meliputi:
+
+* `id_pesanan`: Tipe data **INT**, merupakan Primary Key.
+* `id_kantin`: Tipe data **INT**, merupakan Foreign Key yang merujuk ke tabel **Kantin**.
+* `id_mahasiswa`: Tipe data **INT**, merupakan Foreign Key yang merujuk ke tabel **Mahasiswa**.
+* `tanggal`: Tipe data **DATETIME**, menyimpan waktu pemesanan dilakukan.
+* `status`: Tipe data **ENUM**, menyatakan status pesanan, seperti `'proses'`, `'selesai'`, atau lainnya.
+
+---
+
+### **Tabel Detail\_Pesanan**
+
+Tabel ini menyimpan rincian dari setiap item yang dipesan dalam satu pesanan. Kolom-kolom dalam tabel ini adalah:
+
+* `id_detail`: Tipe data **INT**, merupakan Primary Key.
+* `id_pesanan`: Tipe data **INT**, merupakan Foreign Key yang merujuk ke tabel **Pesanan**.
+* `id_menu`: Tipe data **INT**, merupakan Foreign Key yang merujuk ke tabel **Menu**.
+* `jumlah`: Tipe data **INT**, menyimpan jumlah menu yang dipesan.
+* `harga_total`: Tipe data **DECIMAL**, menyimpan total harga dari menu yang dipesan dikalikan jumlah.
+
+---
