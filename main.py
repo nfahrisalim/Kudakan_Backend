@@ -12,7 +12,7 @@ Base.metadata.create_all(bind=engine)
 
 # Initialize FastAPI app
 app = FastAPI(
-    title="University Canteen API",
+    title="Kudakan API",
     description="FastAPI backend for university canteen ordering system with MinIO storage",
     version="1.0.0",
     docs_url="/docs",
