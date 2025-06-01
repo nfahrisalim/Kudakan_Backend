@@ -22,8 +22,12 @@ author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "python main.py"
+args = "python simple_main.py"
 waitForPort = 5000
 
 [deployment]
-run = ["sh", "-c", "python main.py"]
+run = ["sh", "-c", "python simple_main.py"]
+
+[[ports]]
+localPort = 5000
+externalPort = 80
