@@ -1,0 +1,15 @@
+# Ignore Python cache files
+__pycache__/
+
+# Ignore virtual environment directory
+venv/
+
+# Ignore environment variable file
+.env
+
+# Ignore lock files
+poetry.lock
+uv.lock
+
+# Ignore test file 
+test

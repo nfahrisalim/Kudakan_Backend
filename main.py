@@ -1,11 +1,10 @@
 import os
 import uvicorn
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
 from database import engine, Base
 from routers import mahasiswa, kantin, menu, pesanan, detail_pesanan
-from minio_client import init_minio
+from supabase_storage import supabase  # import supabase client siap pakai
 
 # Create database tables
 Base.metadata.create_all(bind=engine)
@@ -13,7 +12,7 @@ Base.metadata.create_all(bind=engine)
 # Initialize FastAPI app
 app = FastAPI(
     title="Kudakan API",
-    description="FastAPI backend for university canteen ordering system with MinIO storage",
+    description="FastAPI backend for university canteen ordering system with Supabase storage",
     version="1.0.0",
     docs_url="/docs",
     redoc_url="/redoc"
@@ -28,11 +27,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Initialize MinIO (optional - will retry when needed)
-try:
-    init_minio()
-except Exception as e:
-    print(f"MinIO not available at startup: {e}")
+# Tidak perlu init_minio(), langsung pakai supabase client yang sudah siap
 
 # Include routers
 app.include_router(mahasiswa.router, prefix="/api/v1/mahasiswa", tags=["Mahasiswa"])

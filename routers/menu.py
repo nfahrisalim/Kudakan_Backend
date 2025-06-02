@@ -5,7 +5,7 @@ from decimal import Decimal
 from database import get_db
 from models import Menu, Kantin
 from schemas import MenuCreate, MenuUpdate, MenuResponse, MenuWithKantin
-from minio_client import upload_image, delete_image
+from supabase_storage import upload_image, delete_image
 
 router = APIRouter()
 
