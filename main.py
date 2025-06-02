@@ -39,7 +39,8 @@ app.include_router(detail_pesanan.router, prefix="/api/v1/detail-pesanan", tags=
 @app.get("/")
 async def root():
     return {
-        "message": "University Canteen API",
+        "message": "Kudakan API is running",
+        "version": "1.0.0",
         "docs": "/docs",
         "redoc": "/redoc"
     }
