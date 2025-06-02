@@ -5,3 +5,5 @@ sqlalchemy
 supabase
 python-multipart
 psycopg2-binary
+email-validator
+pydantic[email]
