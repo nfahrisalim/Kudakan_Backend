@@ -1,48 +1,56 @@
+Here’s the translated and polished English version of your `README.md` in Markdown:
+
+---
+
 # 🍛 Kudakan API
 
-**Kudakan** (Kudapan Aja) adalah RESTful API berbasis FastAPI untuk sistem pemesanan makanan di kantin universitas. Proyek ini mengelola data mahasiswa, kantin, menu makanan, dan pesanan. Gambar arsitektur sistem dapat dilihat di bawah ini:
+**Kudakan** (short for *Kudapan Aja*) is a RESTful API built with FastAPI for a university canteen food ordering system. This project manages students, canteens, food menus, and orders. The system architecture can be seen below:
 
 ![Database Structure](https://github.com/nfahrisalim/Assets/blob/main/Kudakan/SQL.jpeg?raw=true)
 
-## 📦 Fitur Utama
+## 📦 Key Features
 
-- CRUD Mahasiswa
-- CRUD Kantin
-- CRUD Menu (dengan upload gambar via Supabase)
-- CRUD Pesanan dan Detail Pesanan
-- Filter berdasarkan ID, Email, dan Status
-- Auto-kalkulasi harga menu di Detail Pesanan
-- Endpoint pencarian menu
-- Endpoint relasional: menu + kantin, pesanan + detail, dsb.
+* CRUD operations for Students
+* CRUD operations for Canteens
+* CRUD operations for Menus (with image upload via Supabase)
+* CRUD operations for Orders and Order Details
+* Filtering by ID, Email, and Status
+* Auto-price calculation for Order Details
+* Menu search endpoint
+* Relational endpoints: menu + canteen, order + details, etc.
 
-## 🧪 Teknologi
+## 🧪 Technology Stack
 
-- ⚙️ **FastAPI** – backend framework
-- 💾 **PostgreSQL** – database relasional
-- ☁️ **Supabase Storage** – penyimpanan gambar
-- 🧪 **Pydantic** – validasi skema data
-- 🧱 **OpenAPI** – dokumentasi otomatis
-- 🔁 **CORS Middleware** – untuk akses frontend
+* ⚙️ **FastAPI** – backend framework
+* 💾 **PostgreSQL** – relational database
+* ☁️ **Supabase Storage** – image storage
+* 🧪 **Pydantic** – data schema validation
+* 🧱 **OpenAPI** – automatic documentation
+* 🔁 **CORS Middleware** – frontend access support
 
-## 🔌 API Endpoint
+## 🔌 API Endpoints
 
-Semua endpoint dapat diakses melalui prefix `/api/v1/`.
+All endpoints are accessible under the `/api/v1/` prefix.
 
-Beberapa contoh endpoint:
-- `POST /api/v1/mahasiswa/` – Tambah mahasiswa baru
-- `GET /api/v1/kantin/{kantin_id}/with-menus` – Ambil kantin + semua menu
-- `POST /api/v1/menu/with-image` – Tambah menu + upload gambar
-- `GET /api/v1/pesanan/{id}/with-details` – Detail pesanan + info mahasiswa + kantin
+Sample endpoints include:
 
-Dokumentasi lengkap tersedia di endpoint:  
-👉 `/docs` atau `/redoc`
+* `POST /api/v1/mahasiswa/` – Add a new student
+* `GET /api/v1/kantin/{kantin_id}/with-menus` – Retrieve canteen with its menus
+* `POST /api/v1/menu/with-image` – Add menu item with image upload
+* `GET /api/v1/pesanan/{id}/with-details` – Get order details with student and canteen info
 
-## ⚙️ Instalasi Lokal
+Full documentation is available at:
+👉 `/docs` or `/redoc`
+
+## ⚙️ Local Setup
 
 ```bash
 git clone https://github.com/username/kudakan-api.git
 cd kudakan-api
 python -m venv env
-source env/bin/activate  # atau .\env\Scripts\activate di Windows
+source env/bin/activate  # or .\env\Scripts\activate on Windows
 pip install -r requirements.txt
 uvicorn main:app --reload
+
+
+---
