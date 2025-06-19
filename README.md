@@ -1,6 +1,6 @@
 # 🍛 Kudakan API
 
-**Kudakan** (Kantin untuk Mahasiswa) adalah RESTful API berbasis FastAPI untuk sistem pemesanan makanan di kantin universitas. Proyek ini mengelola data mahasiswa, kantin, menu makanan, dan pesanan. Gambar arsitektur sistem dapat dilihat di bawah ini:
+**Kudakan** (Kudapan Aja) adalah RESTful API berbasis FastAPI untuk sistem pemesanan makanan di kantin universitas. Proyek ini mengelola data mahasiswa, kantin, menu makanan, dan pesanan. Gambar arsitektur sistem dapat dilihat di bawah ini:
 
 ![Database Structure](https://github.com/nfahrisalim/Assets/blob/main/Kudakan/SQL.jpeg?raw=true)
 
