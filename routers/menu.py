@@ -16,18 +16,18 @@ async def create_menu(menu: MenuCreate, db: Session = Depends(get_db)):
     kantin = db.query(Kantin).filter(Kantin.id_kantin == menu.id_kantin).first()
     if kantin is None:
         raise HTTPException(status_code=404, detail="Kantin not found")
-    
+
     db_menu = Menu(
         id_kantin=menu.id_kantin,
         nama_menu=menu.nama_menu,
         harga=menu.harga,
         img_menu=menu.img_menu
     )
-    
+
     db.add(db_menu)
     db.commit()
     db.refresh(db_menu)
-    
+
     return db_menu
 
 @router.post("/with-image", response_model=MenuResponse, status_code=status.HTTP_201_CREATED)
@@ -43,22 +43,22 @@ async def create_menu_with_image(
     kantin = db.query(Kantin).filter(Kantin.id_kantin == id_kantin).first()
     if kantin is None:
         raise HTTPException(status_code=404, detail="Kantin not found")
-    
+
     img_url = None
     if image:
         img_url = await upload_image(image)
-    
+
     db_menu = Menu(
         id_kantin=id_kantin,
         nama_menu=nama_menu,
         harga=harga,
         img_menu=img_url
     )
-    
+
     db.add(db_menu)
     db.commit()
     db.refresh(db_menu)
-    
+
     return db_menu
 
 @router.get("/", response_model=List[MenuResponse])
@@ -74,7 +74,7 @@ async def get_menu_by_kantin(kantin_id: int, db: Session = Depends(get_db)):
     kantin = db.query(Kantin).filter(Kantin.id_kantin == kantin_id).first()
     if kantin is None:
         raise HTTPException(status_code=404, detail="Kantin not found")
-    
+
     menu = db.query(Menu).filter(Menu.id_kantin == kantin_id).all()
     return menu
 
@@ -104,16 +104,16 @@ async def update_menu(
     menu = db.query(Menu).filter(Menu.id_menu == menu_id).first()
     if menu is None:
         raise HTTPException(status_code=404, detail="Menu not found")
-    
+
     # Update fields if provided
     update_data = menu_update.dict(exclude_unset=True)
-    
+
     for field, value in update_data.items():
         setattr(menu, field, value)
-    
+
     db.commit()
     db.refresh(menu)
-    
+
     return menu
 
 @router.put("/{menu_id}/image", response_model=MenuResponse)
@@ -126,18 +126,18 @@ async def update_menu_image(
     menu = db.query(Menu).filter(Menu.id_menu == menu_id).first()
     if menu is None:
         raise HTTPException(status_code=404, detail="Menu not found")
-    
+
     # Delete old image if exists
     if menu.img_menu:
         delete_image(menu.img_menu)
-    
+
     # Upload new image
     img_url = await upload_image(image)
     menu.img_menu = img_url
-    
+
     db.commit()
     db.refresh(menu)
-    
+
     return menu
 
 @router.delete("/{menu_id}", status_code=status.HTTP_204_NO_CONTENT)
@@ -146,14 +146,14 @@ async def delete_menu(menu_id: int, db: Session = Depends(get_db)):
     menu = db.query(Menu).filter(Menu.id_menu == menu_id).first()
     if menu is None:
         raise HTTPException(status_code=404, detail="Menu not found")
-    
+
     # Delete image if exists
     if menu.img_menu:
         delete_image(menu.img_menu)
-    
+
     db.delete(menu)
     db.commit()
-    
+
     return None
 
 @router.get("/search/{query}", response_model=List[MenuResponse])

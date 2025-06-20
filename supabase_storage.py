@@ -1,16 +1,14 @@
 import os
 import uuid
 from fastapi import UploadFile, HTTPException
-from typing import Optional
 from supabase import create_client, Client
 from dotenv import load_dotenv
 
-# Load environment variables
 load_dotenv()
 
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_SERVICE_ROLE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
-SUPABASE_BUCKET_NAME = os.getenv("SUPABASE_BUCKET_NAME", "menu-images")
+SUPABASE_BUCKET_NAME = os.getenv("SUPABASE_BUCKET_NAME", "equestrian")
 
 if not SUPABASE_URL or not SUPABASE_SERVICE_ROLE_KEY:
     raise ValueError("Missing Supabase credentials in environment variables")
@@ -27,15 +25,18 @@ async def upload_image(file: UploadFile) -> str:
         filename = f"{uuid.uuid4()}.{ext}"
         data = await file.read()
 
+        # Upload file
         res = supabase.storage.from_(SUPABASE_BUCKET_NAME).upload(
             path=filename,
             file=data,
             file_options={"content-type": file.content_type},
         )
 
-        if "error" in res:
-            raise Exception(res["error"]["message"])
+        # ✅ Check if upload failed
+        if res is None or getattr(res, 'error', None):
+            raise Exception(getattr(res.error, 'message', 'Unknown upload error'))
 
+        # ✅ Generate public URL
         public_url = supabase.storage.from_(SUPABASE_BUCKET_NAME).get_public_url(filename)
         return public_url
 

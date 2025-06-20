@@ -39,7 +39,7 @@ class Menu(Base):
     id_kantin = Column(Integer, ForeignKey("kantin.id_kantin"), nullable=False)
     nama_menu = Column(String(255), nullable=False)
     harga = Column(Numeric(10, 2), nullable=False)
-    img_menu = Column(String(500), nullable=True)  # URL or path to image
+    img_menu = Column(String(500), nullable=True) 
     
     # Relationships
     kantin = relationship("Kantin", back_populates="menu")
