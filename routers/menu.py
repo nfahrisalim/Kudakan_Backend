@@ -6,16 +6,19 @@ from database import get_db
 from models import Menu, Kantin
 from schemas import MenuCreate, MenuUpdate, MenuResponse, MenuWithKantin
 from supabase_storage import upload_image, delete_image
+from auth import get_current_kantin, get_current_user
 
 router = APIRouter()
 
 @router.post("/", response_model=MenuResponse, status_code=status.HTTP_201_CREATED)
-async def create_menu(menu: MenuCreate, db: Session = Depends(get_db)):
+async def create_menu(menu: MenuCreate, db: Session = Depends(get_db), current_kantin: Kantin = Depends(get_current_kantin)):
     """Create a new menu item"""
-    # Check if kantin exists
-    kantin = db.query(Kantin).filter(Kantin.id_kantin == menu.id_kantin).first()
-    if kantin is None:
-        raise HTTPException(status_code=404, detail="Kantin not found")
+    # Only allow kantin to create menu for themselves
+    if current_kantin.id_kantin != menu.id_kantin:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You can only create menu for your own kantin"
+        )
 
     db_menu = Menu(
         id_kantin=menu.id_kantin,
@@ -36,13 +39,16 @@ async def create_menu_with_image(
     nama_menu: str = Form(...),
     harga: Decimal = Form(...),
     image: Optional[UploadFile] = File(None),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_kantin: Kantin = Depends(get_current_kantin)
 ):
     """Create a new menu item with image upload"""
-    # Check if kantin exists
-    kantin = db.query(Kantin).filter(Kantin.id_kantin == id_kantin).first()
-    if kantin is None:
-        raise HTTPException(status_code=404, detail="Kantin not found")
+    # Only allow kantin to create menu for themselves
+    if current_kantin.id_kantin != id_kantin:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You can only create menu for your own kantin"
+        )
 
     img_url = None
     if image:
@@ -62,13 +68,13 @@ async def create_menu_with_image(
     return db_menu
 
 @router.get("/", response_model=List[MenuResponse])
-async def get_all_menu(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+async def get_all_menu(skip: int = 0, limit: int = 100, db: Session = Depends(get_db), current_user = Depends(get_current_user)):
     """Get all menu items with pagination"""
     menu = db.query(Menu).offset(skip).limit(limit).all()
     return menu
 
 @router.get("/kantin/{kantin_id}", response_model=List[MenuResponse])
-async def get_menu_by_kantin(kantin_id: int, db: Session = Depends(get_db)):
+async def get_menu_by_kantin(kantin_id: int, db: Session = Depends(get_db), current_user = Depends(get_current_user)):
     """Get all menu items for a specific kantin"""
     # Check if kantin exists
     kantin = db.query(Kantin).filter(Kantin.id_kantin == kantin_id).first()
@@ -79,7 +85,7 @@ async def get_menu_by_kantin(kantin_id: int, db: Session = Depends(get_db)):
     return menu
 
 @router.get("/{menu_id}", response_model=MenuResponse)
-async def get_menu(menu_id: int, db: Session = Depends(get_db)):
+async def get_menu(menu_id: int, db: Session = Depends(get_db), current_user = Depends(get_current_user)):
     """Get menu item by ID"""
     menu = db.query(Menu).filter(Menu.id_menu == menu_id).first()
     if menu is None:
@@ -87,7 +93,7 @@ async def get_menu(menu_id: int, db: Session = Depends(get_db)):
     return menu
 
 @router.get("/{menu_id}/with-kantin", response_model=MenuWithKantin)
-async def get_menu_with_kantin(menu_id: int, db: Session = Depends(get_db)):
+async def get_menu_with_kantin(menu_id: int, db: Session = Depends(get_db), current_user = Depends(get_current_user)):
     """Get menu item with kantin information"""
     menu = db.query(Menu).filter(Menu.id_menu == menu_id).first()
     if menu is None:
@@ -98,12 +104,20 @@ async def get_menu_with_kantin(menu_id: int, db: Session = Depends(get_db)):
 async def update_menu(
     menu_id: int, 
     menu_update: MenuUpdate, 
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_kantin: Kantin = Depends(get_current_kantin)
 ):
     """Update menu item"""
     menu = db.query(Menu).filter(Menu.id_menu == menu_id).first()
     if menu is None:
         raise HTTPException(status_code=404, detail="Menu not found")
+    
+    # Only allow kantin to update their own menu
+    if menu.id_kantin != current_kantin.id_kantin:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You can only update your own menu items"
+        )
 
     # Update fields if provided
     update_data = menu_update.dict(exclude_unset=True)
@@ -120,12 +134,20 @@ async def update_menu(
 async def update_menu_image(
     menu_id: int,
     image: UploadFile = File(...),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_kantin: Kantin = Depends(get_current_kantin)
 ):
     """Update menu item image"""
     menu = db.query(Menu).filter(Menu.id_menu == menu_id).first()
     if menu is None:
         raise HTTPException(status_code=404, detail="Menu not found")
+    
+    # Only allow kantin to update their own menu image
+    if menu.id_kantin != current_kantin.id_kantin:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You can only update your own menu items"
+        )
 
     # Delete old image if exists
     if menu.img_menu:
@@ -141,11 +163,18 @@ async def update_menu_image(
     return menu
 
 @router.delete("/{menu_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_menu(menu_id: int, db: Session = Depends(get_db)):
+async def delete_menu(menu_id: int, db: Session = Depends(get_db), current_kantin: Kantin = Depends(get_current_kantin)):
     """Delete menu item"""
     menu = db.query(Menu).filter(Menu.id_menu == menu_id).first()
     if menu is None:
         raise HTTPException(status_code=404, detail="Menu not found")
+    
+    # Only allow kantin to delete their own menu
+    if menu.id_kantin != current_kantin.id_kantin:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You can only delete your own menu items"
+        )
 
     # Delete image if exists
     if menu.img_menu:
@@ -157,7 +186,7 @@ async def delete_menu(menu_id: int, db: Session = Depends(get_db)):
     return None
 
 @router.get("/search/{query}", response_model=List[MenuResponse])
-async def search_menu(query: str, db: Session = Depends(get_db)):
+async def search_menu(query: str, db: Session = Depends(get_db), current_user = Depends(get_current_user)):
     """Search menu items by name"""
     menu = db.query(Menu).filter(Menu.nama_menu.ilike(f"%{query}%")).all()
     return menu

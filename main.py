@@ -30,6 +30,8 @@ app.add_middleware(
 # Tidak perlu init_minio(), langsung pakai supabase client yang sudah siap
 
 # Include routers
+from routers import auth
+app.include_router(auth.router, prefix="/api/v1/auth", tags=["Authentication"])
 app.include_router(mahasiswa.router, prefix="/api/v1/mahasiswa", tags=["Mahasiswa"])
 app.include_router(kantin.router, prefix="/api/v1/kantin", tags=["Kantin"])
 app.include_router(menu.router, prefix="/api/v1/menu", tags=["Menu"])
