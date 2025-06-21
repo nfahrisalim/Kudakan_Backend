@@ -143,7 +143,7 @@ from typing import List
 from database import get_db
 from models import Pesanan, Mahasiswa, Kantin
 from schemas import PesananCreate, PesananUpdate, PesananResponse, PesananWithDetails
-from auth import get_current_mahasiswa, get_current_kantin, get_current_user
+from auth import get_current_mahasiswa, get_current_kantin, get_current_user, get_current_mahasiswa_with_profile
 
 router = APIRouter()
 
@@ -151,7 +151,7 @@ router = APIRouter()
 async def create_pesanan(
     pesanan: PesananCreate, 
     db: Session = Depends(get_db),
-    current_mahasiswa: Mahasiswa = Depends(get_current_mahasiswa)
+    current_mahasiswa: Mahasiswa = Depends(get_current_mahasiswa_with_profile)
 ):
     """Create a new pesanan (mahasiswa only)"""
     # Only allow mahasiswa to create pesanan for themselves

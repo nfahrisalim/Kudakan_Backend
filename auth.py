@@ -106,3 +106,35 @@ def get_current_kantin(
             detail="Access forbidden: Kantin only"
         )
     return current_user
+
+def get_current_mahasiswa_with_profile(
+    current_user: Union[Mahasiswa, Kantin] = Depends(get_current_user)
+) -> Mahasiswa:
+    """Get current mahasiswa user with complete profile"""
+    if not isinstance(current_user, Mahasiswa):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Access forbidden: Mahasiswa only"
+        )
+    if not current_user.is_profile_complete:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Profile not complete. Please complete your profile first with delivery address and phone number."
+        )
+    return current_user
+
+def get_current_kantin_with_profile(
+    current_user: Union[Mahasiswa, Kantin] = Depends(get_current_user)
+) -> Kantin:
+    """Get current kantin user with complete profile"""
+    if not isinstance(current_user, Kantin):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Access forbidden: Kantin only"
+        )
+    if not current_user.is_profile_complete:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Profile not complete. Please complete your profile first with tenant name, owner details, and operational hours."
+        )
+    return current_user

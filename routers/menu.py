@@ -6,12 +6,12 @@ from database import get_db
 from models import Menu, Kantin
 from schemas import MenuCreate, MenuUpdate, MenuResponse, MenuWithKantin
 from supabase_storage import upload_image, delete_image
-from auth import get_current_kantin, get_current_user
+from auth import get_current_kantin, get_current_user, get_current_kantin_with_profile
 
 router = APIRouter()
 
 @router.post("/", response_model=MenuResponse, status_code=status.HTTP_201_CREATED)
-async def create_menu(menu: MenuCreate, db: Session = Depends(get_db), current_kantin: Kantin = Depends(get_current_kantin)):
+async def create_menu(menu: MenuCreate, db: Session = Depends(get_db), current_kantin: Kantin = Depends(get_current_kantin_with_profile)):
     """Create a new menu item"""
     # Only allow kantin to create menu for themselves
     if current_kantin.id_kantin != menu.id_kantin:
@@ -40,7 +40,7 @@ async def create_menu_with_image(
     harga: Decimal = Form(...),
     image: Optional[UploadFile] = File(None),
     db: Session = Depends(get_db),
-    current_kantin: Kantin = Depends(get_current_kantin)
+    current_kantin: Kantin = Depends(get_current_kantin_with_profile)
 ):
     """Create a new menu item with image upload"""
     # Only allow kantin to create menu for themselves

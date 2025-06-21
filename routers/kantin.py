@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from typing import List
 from database import get_db
 from models import Kantin
-from schemas import KantinCreate, KantinUpdate, KantinResponse, KantinWithMenus
+from schemas import KantinCreate, KantinUpdate, KantinResponse, KantinWithMenus, KantinProfileUpdate
 from auth import get_password_hash, get_current_kantin, get_current_user
 
 router = APIRouter()
@@ -120,3 +120,34 @@ async def get_kantin_by_email(email: str, db: Session = Depends(get_db), current
     if kantin is None:
         raise HTTPException(status_code=404, detail="Kantin not found")
     return kantin
+
+@router.put("/complete-profile", response_model=KantinResponse)
+async def complete_kantin_profile(
+    profile_data: KantinProfileUpdate,
+    db: Session = Depends(get_db),
+    current_kantin: Kantin = Depends(get_current_kantin)
+):
+    """Complete kantin profile with tenant name, owner details, and operational hours"""
+    current_kantin.nama_tenant = profile_data.nama_tenant
+    current_kantin.nama_pemilik = profile_data.nama_pemilik
+    current_kantin.nomor_pemilik = profile_data.nomor_pemilik
+    current_kantin.jam_operasional = profile_data.jam_operasional
+    current_kantin.is_profile_complete = True
+    
+    db.commit()
+    db.refresh(current_kantin)
+    
+    return current_kantin
+
+@router.get("/profile-status", response_model=dict)
+async def get_profile_status(current_kantin: Kantin = Depends(get_current_kantin)):
+    """Check if kantin profile is complete"""
+    return {
+        "is_complete": current_kantin.is_profile_complete,
+        "missing_fields": {
+            "nama_tenant": current_kantin.nama_tenant is None,
+            "nama_pemilik": current_kantin.nama_pemilik is None,
+            "nomor_pemilik": current_kantin.nomor_pemilik is None,
+            "jam_operasional": current_kantin.jam_operasional is None
+        }
+    }

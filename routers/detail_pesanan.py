@@ -5,12 +5,12 @@ from decimal import Decimal
 from database import get_db
 from models import DetailPesanan, Pesanan, Menu, Mahasiswa, Kantin
 from schemas import DetailPesananCreate, DetailPesananUpdate, DetailPesananResponse
-from auth import get_current_mahasiswa, get_current_kantin, get_current_user
+from auth import get_current_mahasiswa, get_current_kantin, get_current_user, get_current_mahasiswa_with_profile
 
 router = APIRouter()
 
 @router.post("/", response_model=DetailPesananResponse, status_code=status.HTTP_201_CREATED)
-async def create_detail_pesanan(detail: DetailPesananCreate, db: Session = Depends(get_db), current_mahasiswa: Mahasiswa = Depends(get_current_mahasiswa)):
+async def create_detail_pesanan(detail: DetailPesananCreate, db: Session = Depends(get_db), current_mahasiswa: Mahasiswa = Depends(get_current_mahasiswa_with_profile)):
     """Create a new detail pesanan"""
     # Check if pesanan exists
     pesanan = db.query(Pesanan).filter(Pesanan.id_pesanan == detail.id_pesanan).first()
@@ -56,7 +56,7 @@ async def create_detail_pesanan_auto_calculate(
     id_menu: int,
     jumlah: int,
     db: Session = Depends(get_db),
-    current_mahasiswa: Mahasiswa = Depends(get_current_mahasiswa)
+    current_mahasiswa: Mahasiswa = Depends(get_current_mahasiswa_with_profile)
 ):
     """Create detail pesanan with automatic price calculation"""
     # Check if pesanan exists

@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from typing import List
 from database import get_db
 from models import Mahasiswa
-from schemas import MahasiswaCreate, MahasiswaUpdate, MahasiswaResponse
+from schemas import MahasiswaCreate, MahasiswaUpdate, MahasiswaResponse, MahasiswaProfileUpdate
 from auth import get_password_hash, get_current_mahasiswa, get_current_user
 
 router = APIRouter()
@@ -113,3 +113,30 @@ async def get_mahasiswa_by_email(email: str, db: Session = Depends(get_db), curr
     if mahasiswa is None:
         raise HTTPException(status_code=404, detail="Mahasiswa not found")
     return mahasiswa
+
+@router.put("/complete-profile", response_model=MahasiswaResponse)
+async def complete_mahasiswa_profile(
+    profile_data: MahasiswaProfileUpdate,
+    db: Session = Depends(get_db),
+    current_mahasiswa: Mahasiswa = Depends(get_current_mahasiswa)
+):
+    """Complete mahasiswa profile with delivery address and phone number"""
+    current_mahasiswa.alamat_pengiriman = profile_data.alamat_pengiriman
+    current_mahasiswa.nomor_hp = profile_data.nomor_hp
+    current_mahasiswa.is_profile_complete = True
+    
+    db.commit()
+    db.refresh(current_mahasiswa)
+    
+    return current_mahasiswa
+
+@router.get("/profile-status", response_model=dict)
+async def get_profile_status(current_mahasiswa: Mahasiswa = Depends(get_current_mahasiswa)):
+    """Check if mahasiswa profile is complete"""
+    return {
+        "is_complete": current_mahasiswa.is_profile_complete,
+        "missing_fields": {
+            "alamat_pengiriman": current_mahasiswa.alamat_pengiriman is None,
+            "nomor_hp": current_mahasiswa.nomor_hp is None
+        }
+    }

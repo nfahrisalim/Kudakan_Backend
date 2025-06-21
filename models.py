@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime, Enum, ForeignKey, Text, Numeric
+from sqlalchemy import Column, Integer, String, DateTime, Enum, ForeignKey, Text, Numeric, Boolean
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from database import Base
@@ -17,6 +17,11 @@ class Mahasiswa(Base):
     password = Column(String(255), nullable=False)
     nim = Column(String(50), nullable=False)
     
+    # Profile fields
+    alamat_pengiriman = Column(Text, nullable=True)
+    nomor_hp = Column(String(20), nullable=True)
+    is_profile_complete = Column(Boolean, default=False)
+    
     # Relationships
     pesanan = relationship("Pesanan", back_populates="mahasiswa")
 
@@ -27,6 +32,13 @@ class Kantin(Base):
     nama_kantin = Column(String(255), nullable=False)
     email = Column(String(255), unique=True, nullable=False, index=True)
     password = Column(String(255), nullable=False)
+    
+    # Profile fields
+    nama_tenant = Column(String(255), nullable=True)
+    nama_pemilik = Column(String(255), nullable=True)
+    nomor_pemilik = Column(String(20), nullable=True)
+    jam_operasional = Column(String(255), nullable=True)
+    is_profile_complete = Column(Boolean, default=False)
     
     # Relationships
     menu = relationship("Menu", back_populates="kantin")

@@ -22,9 +22,18 @@ class MahasiswaUpdate(BaseModel):
     email: Optional[EmailStr] = None
     nim: Optional[str] = None
     password: Optional[str] = None
+    alamat_pengiriman: Optional[str] = None
+    nomor_hp: Optional[str] = None
+
+class MahasiswaProfileUpdate(BaseModel):
+    alamat_pengiriman: str
+    nomor_hp: str
 
 class MahasiswaResponse(MahasiswaBase):
     id_mahasiswa: int
+    alamat_pengiriman: Optional[str] = None
+    nomor_hp: Optional[str] = None
+    is_profile_complete: bool = False
     
     class Config:
         from_attributes = True
@@ -41,9 +50,24 @@ class KantinUpdate(BaseModel):
     nama_kantin: Optional[str] = None
     email: Optional[EmailStr] = None
     password: Optional[str] = None
+    nama_tenant: Optional[str] = None
+    nama_pemilik: Optional[str] = None
+    nomor_pemilik: Optional[str] = None
+    jam_operasional: Optional[str] = None
+
+class KantinProfileUpdate(BaseModel):
+    nama_tenant: str
+    nama_pemilik: str
+    nomor_pemilik: str
+    jam_operasional: str
 
 class KantinResponse(KantinBase):
     id_kantin: int
+    nama_tenant: Optional[str] = None
+    nama_pemilik: Optional[str] = None
+    nomor_pemilik: Optional[str] = None
+    jam_operasional: Optional[str] = None
+    is_profile_complete: bool = False
     
     class Config:
         from_attributes = True
