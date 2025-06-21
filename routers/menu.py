@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from typing import List, Optional
 from decimal import Decimal
 from database import get_db
-from models import Menu, Kantin
+from models import Menu, Kantin, TipeMenuEnum
 from schemas import MenuCreate, MenuUpdate, MenuResponse, MenuWithKantin
 from supabase_storage import upload_image, delete_image
 from auth import get_current_kantin, get_current_user, get_current_kantin_with_profile
@@ -38,6 +38,7 @@ async def create_menu_with_image(
     id_kantin: int = Form(...),
     nama_menu: str = Form(...),
     harga: Decimal = Form(...),
+    tipe_menu: TipeMenuEnum = Form(TipeMenuEnum.makanan),
     image: Optional[UploadFile] = File(None),
     db: Session = Depends(get_db),
     current_kantin: Kantin = Depends(get_current_kantin_with_profile)
@@ -58,7 +59,8 @@ async def create_menu_with_image(
         id_kantin=id_kantin,
         nama_menu=nama_menu,
         harga=harga,
-        img_menu=img_url
+        img_menu=img_url,
+        tipe_menu=tipe_menu
     )
 
     db.add(db_menu)
@@ -189,4 +191,21 @@ async def delete_menu(menu_id: int, db: Session = Depends(get_db), current_kanti
 async def search_menu(query: str, db: Session = Depends(get_db), current_user = Depends(get_current_user)):
     """Search menu items by name"""
     menu = db.query(Menu).filter(Menu.nama_menu.ilike(f"%{query}%")).all()
+    return menu
+
+@router.get("/tipe/{tipe_menu}", response_model=List[MenuResponse])
+async def get_menu_by_tipe(tipe_menu: TipeMenuEnum, db: Session = Depends(get_db), current_user = Depends(get_current_user)):
+    """Get menu items by type"""
+    menu = db.query(Menu).filter(Menu.tipe_menu == tipe_menu).all()
+    return menu
+
+@router.get("/kantin/{kantin_id}/tipe/{tipe_menu}", response_model=List[MenuResponse])
+async def get_menu_by_kantin_and_tipe(kantin_id: int, tipe_menu: TipeMenuEnum, db: Session = Depends(get_db), current_user = Depends(get_current_user)):
+    """Get menu items by kantin and type"""
+    # Check if kantin exists
+    kantin = db.query(Kantin).filter(Kantin.id_kantin == kantin_id).first()
+    if kantin is None:
+        raise HTTPException(status_code=404, detail="Kantin not found")
+
+    menu = db.query(Menu).filter(Menu.id_kantin == kantin_id, Menu.tipe_menu == tipe_menu).all()
     return menu

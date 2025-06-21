@@ -8,6 +8,11 @@ class StatusPesananEnum(enum.Enum):
     proses = "proses"
     selesai = "selesai"
 
+class TipeMenuEnum(enum.Enum):
+    makanan = "makanan"
+    minuman = "minuman"
+    snack = "snack"
+
 class Mahasiswa(Base):
     __tablename__ = "mahasiswa"
     
@@ -51,7 +56,8 @@ class Menu(Base):
     id_kantin = Column(Integer, ForeignKey("kantin.id_kantin"), nullable=False)
     nama_menu = Column(String(255), nullable=False)
     harga = Column(Numeric(10, 2), nullable=False)
-    img_menu = Column(String(500), nullable=True) 
+    img_menu = Column(String(500), nullable=True)
+    tipe_menu = Column(Enum(TipeMenuEnum), nullable=False, default=TipeMenuEnum.makanan)
     
     # Relationships
     kantin = relationship("Kantin", back_populates="menu")

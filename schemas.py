@@ -8,6 +8,11 @@ class StatusPesananEnum(str, Enum):
     proses = "proses"
     selesai = "selesai"
 
+class TipeMenuEnum(str, Enum):
+    makanan = "makanan"
+    minuman = "minuman"
+    snack = "snack"
+
 # Mahasiswa schemas
 class MahasiswaBase(BaseModel):
     nama: str
@@ -77,6 +82,7 @@ class MenuBase(BaseModel):
     nama_menu: str
     harga: Decimal
     img_menu: Optional[str] = None
+    tipe_menu: TipeMenuEnum = TipeMenuEnum.makanan
 
 class MenuCreate(MenuBase):
     id_kantin: int
@@ -85,6 +91,7 @@ class MenuUpdate(BaseModel):
     nama_menu: Optional[str] = None
     harga: Optional[Decimal] = None
     img_menu: Optional[str] = None
+    tipe_menu: Optional[TipeMenuEnum] = None
 
 class MenuResponse(MenuBase):
     id_menu: int
